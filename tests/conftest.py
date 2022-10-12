@@ -1,11 +1,18 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring
-from quart.__about__ import __version__ as quart_version
-import pytest
 from packaging import version
+try:
+    from quart.__about__ import __version__ as quart_version
+    QUART_VER_GT_09 = version.parse(quart_version) >= version.parse('0.9.0')
+except ModuleNotFoundError as e:
+    if e.name == 'quart.__about__':
+        # Ignoring packaging bugs in super ancient versions, any release without this file
+        # is newer than 0.9.0
+        QUART_VER_GT_09 = True
+    else:
+        raise
+import pytest
 from quart_openapi import Pint
 
-
-QUART_VER_GT_09 = version.parse(quart_version) >= version.parse('0.9.0')
 
 @pytest.fixture
 def req_ctx():
